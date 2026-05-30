@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SpendWise Spark</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="SpendWise Spark home">
+        <span class="brand-mark">$</span>
+        <span>SpendWise Spark</span>
+      </a>
+      <nav aria-label="Main navigation">
+        <a href="#planner">Planner</a>
+        <a href="#bills">Bills</a>
+        <a href="#tracker">Track</a>
+        <a href="#coach">Coach</a>
+        <a href="#lessons">Lessons</a>
+        <a href="#challenge">Challenge</a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <p class="eyebrow">Learn to spend money wisely</p>
+          <h1 id="hero-title">Turn every dollar into a clear choice.</h1>
+          <p class="hero-text">
+            SpendWise Spark helps you slow down, sort wants from needs, and build
+            a plan before money disappears.
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="#planner">Build my plan</a>
+            <a class="button secondary" href="#lessons">Try a lesson</a>
+          </div>
+        </div>
+
+        <div class="hero-visual" aria-label="Bright savings path illustration">
+          <canvas id="moneyCanvas" width="560" height="420"></canvas>
+          <div class="score-badge">
+            <span>Today</span>
+            <strong>3 smart choices</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="planner-section" id="planner" aria-labelledby="planner-title">
+        <div class="section-heading">
+          <p class="eyebrow">Simple starter plan</p>
+          <h2 id="planner-title">Split your money before you spend it.</h2>
+        </div>
+
+        <div class="planner-layout">
+          <form class="budget-tool" id="budgetForm">
+            <label for="income">Money available this month</label>
+            <div class="money-input">
+              <span>$</span>
+              <input id="income" name="income" type="number" min="0" step="10" value="600" />
+            </div>
+
+            <fieldset>
+              <legend>Choose your focus</legend>
+              <label class="radio-row">
+                <input type="radio" name="focus" value="balanced" checked />
+                <span>Balanced</span>
+              </label>
+              <label class="radio-row">
+                <input type="radio" name="focus" value="saving" />
+                <span>Save more</span>
+              </label>
+              <label class="radio-row">
+                <input type="radio" name="focus" value="debt" />
+                <span>Pay things off</span>
+              </label>
+            </fieldset>
+          </form>
+
+          <div class="results-panel" aria-live="polite">
+            <div class="result">
+              <span class="dot needs"></span>
+              <p>Needs</p>
+              <strong id="needsAmount">$300</strong>
+            </div>
+            <div class="result">
+              <span class="dot wants"></span>
+              <p>Wants</p>
+              <strong id="wantsAmount">$180</strong>
+            </div>
+            <div class="result">
+              <span class="dot future"></span>
+              <p>Future</p>
+              <strong id="futureAmount">$120</strong>
+            </div>
+            <p class="result-note" id="planNote">
+              Keep wants fun, but give your future a seat at the table.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="bills-section" id="bills" aria-labelledby="bills-title">
+        <div class="section-heading">
+          <p class="eyebrow">Monthly must-pay list</p>
+          <h2 id="bills-title">See what is due, paid, and still waiting.</h2>
+        </div>
+
+        <div class="bills-layout">
+          <form class="bill-tool" id="billForm">
+            <label for="billName">Thing to pay</label>
+            <input id="billName" name="billName" type="text" placeholder="Rent, phone, Netflix" required />
+
+            <label for="billAmount">Amount due</label>
+            <div class="money-input">
+              <span>$</span>
+              <input id="billAmount" name="billAmount" type="number" min="0.01" step="0.01" placeholder="0" required />
+            </div>
+
+            <label for="billDue">Due date</label>
+            <input id="billDue" name="billDue" type="date" required />
+
+            <label class="radio-row handled-row">
+              <input id="billHandled" name="billHandled" type="checkbox" />
+              <span>Already handled</span>
+            </label>
+
+            <button class="button primary" type="submit">Add bill</button>
+          </form>
+
+          <div class="bills-panel" aria-live="polite">
+            <div class="bills-summary">
+              <div>
+                <span>Handled</span>
+                <strong id="billsHandled">$0</strong>
+              </div>
+              <div>
+                <span>Still due</span>
+                <strong id="billsDue">$0</strong>
+              </div>
+              <div>
+                <span>Next up</span>
+                <strong id="nextBill">None</strong>
+              </div>
+            </div>
+
+            <div class="bill-header">
+              <h3>This month</h3>
+              <button class="text-button" id="clearBills" type="button">Clear</button>
+            </div>
+            <ul class="bill-list" id="billList"></ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="tracker-section" id="tracker" aria-labelledby="tracker-title">
+        <div class="section-heading">
+          <p class="eyebrow">Budget tracker</p>
+          <h2 id="tracker-title">Log spending before it sneaks away.</h2>
+        </div>
+
+        <div class="tracker-layout">
+          <form class="expense-tool" id="expenseForm">
+            <label for="expenseName">What did you buy?</label>
+            <input id="expenseName" name="expenseName" type="text" placeholder="Lunch, game, bus pass" required />
+
+            <label for="expenseAmount">Amount spent</label>
+            <div class="money-input">
+              <span>$</span>
+              <input id="expenseAmount" name="expenseAmount" type="number" min="0.01" step="0.01" placeholder="0" required />
+            </div>
+
+            <label for="expenseType">Expense type</label>
+            <select id="expenseType" name="expenseType">
+              <option value="food">Food</option>
+              <option value="bills">Bills</option>
+              <option value="fun">Fun</option>
+              <option value="streaming">Streaming</option>
+              <option value="transport">Transport</option>
+              <option value="saving">Saving</option>
+              <option value="other">Other</option>
+            </select>
+
+            <label for="expenseCategory">Budget category</label>
+            <select id="expenseCategory" name="expenseCategory">
+              <option value="needs">Needs</option>
+              <option value="wants">Wants</option>
+              <option value="future">Future</option>
+            </select>
+
+            <label for="expensePeriod">Budget rhythm</label>
+            <select id="expensePeriod" name="expensePeriod">
+              <option value="monthly">Monthly</option>
+              <option value="weekly">Weekly</option>
+            </select>
+
+            <button class="button primary" type="submit">Add expense</button>
+          </form>
+
+          <div class="tracker-panel" aria-live="polite">
+            <div class="tracker-summary">
+              <div>
+                <span>Spent</span>
+                <strong id="totalSpent">$0</strong>
+              </div>
+              <div>
+                <span>Still available</span>
+                <strong id="totalLeft">$600</strong>
+              </div>
+            </div>
+
+            <div class="meter-list">
+              <div class="meter-row">
+                <div>
+                  <span class="dot needs"></span>
+                  <strong>Needs</strong>
+                </div>
+                <p id="needsTrack">$0 of $300</p>
+                <progress id="needsMeter" max="100" value="0"></progress>
+              </div>
+              <div class="meter-row">
+                <div>
+                  <span class="dot wants"></span>
+                  <strong>Wants</strong>
+                </div>
+                <p id="wantsTrack">$0 of $180</p>
+                <progress id="wantsMeter" max="100" value="0"></progress>
+              </div>
+              <div class="meter-row">
+                <div>
+                  <span class="dot future"></span>
+                  <strong>Future</strong>
+                </div>
+                <p id="futureTrack">$0 of $120</p>
+                <progress id="futureMeter" max="100" value="0"></progress>
+              </div>
+            </div>
+
+            <div class="expense-header">
+              <h3>Recent spending</h3>
+              <button class="text-button" id="clearExpenses" type="button">Clear</button>
+            </div>
+            <ul class="expense-list" id="expenseList"></ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="coach-section" id="coach" aria-labelledby="coach-title">
+        <div class="section-heading">
+          <p class="eyebrow">AI budget coach</p>
+          <h2 id="coach-title">Ask for help before you spend.</h2>
+        </div>
+
+        <div class="coach-shell">
+          <div class="coach-panel" id="coachMessages" aria-live="polite">
+            <div class="message bot">
+              <strong>SpendWise Coach</strong>
+              <p>Tell me what you want to buy, or ask if your budget is on track.</p>
+            </div>
+          </div>
+
+          <form class="coach-form" id="coachForm">
+            <label for="coachInput">Ask the coach</label>
+            <div class="coach-input-row">
+              <input id="coachInput" type="text" placeholder="Can I spend $25 on snacks?" autocomplete="off" required />
+              <button class="button primary" type="submit">Ask</button>
+            </div>
+            <div class="prompt-chips" aria-label="Example questions">
+              <button type="button" data-prompt="How am I doing?">How am I doing?</button>
+              <button type="button" data-prompt="What bills are due?">What bills are due?</button>
+              <button type="button" data-prompt="Can I buy something fun?">Can I buy something fun?</button>
+              <button type="button" data-prompt="How can I save more?">How can I save more?</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <section class="lessons-section" id="lessons" aria-labelledby="lessons-title">
+        <div class="section-heading">
+          <p class="eyebrow">Tiny lessons</p>
+          <h2 id="lessons-title">Practice before you purchase.</h2>
+        </div>
+
+        <div class="lesson-grid">
+          <article class="lesson">
+            <span class="lesson-icon">?</span>
+            <h3>Pause question</h3>
+            <p>Ask: will I still want this tomorrow, or am I buying a mood?</p>
+          </article>
+          <article class="lesson">
+            <span class="lesson-icon">%</span>
+            <h3>Value check</h3>
+            <p>Compare price with use. A $20 item used once costs $20 per use.</p>
+          </article>
+          <article class="lesson">
+            <span class="lesson-icon">+</span>
+            <h3>Future first</h3>
+            <p>Move savings before spending. What remains becomes easier to enjoy.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="challenge-section" id="challenge" aria-labelledby="challenge-title">
+        <div>
+          <p class="eyebrow">7-day challenge</p>
+          <h2 id="challenge-title">Make wise spending feel normal.</h2>
+          <p>
+            Check off one habit each day. Your progress saves in this browser.
+          </p>
+        </div>
+
+        <div class="challenge-list" id="challengeList"></div>
+      </section>
+    </main>
+
+    <footer>
+      <p>SpendWise Spark is a practice space for clearer choices, calmer spending, and brighter goals.</p>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>
