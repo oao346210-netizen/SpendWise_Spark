@@ -537,6 +537,7 @@ function appendMessage(type, label, text) {
   message.append(strong, paragraph);
   coachMessages.append(message);
   coachMessages.scrollTop = coachMessages.scrollHeight;
+  return message;
 }
 
 function biggestCategory(totals) {
@@ -610,7 +611,55 @@ function coachReply(question) {
   return `A wise next step is to protect needs and future money first. You have ${formatMoney(left)} left overall, with ${formatMoney(wantsLeft)} left for wants.`;
 }
 
-function askCoach(event) {
+function coachContext() {
+  const budget = currentBudget();
+  const totals = categoryTotals();
+
+  return {
+    budget: {
+      income: budget.income,
+      needsLimit: budget.needs,
+      wantsLimit: budget.wants,
+      futureLimit: budget.future,
+      spent: totals.all,
+      needsSpent: totals.needs,
+      wantsSpent: totals.wants,
+      futureSpent: totals.future,
+      left: budget.income - totals.all
+    },
+    bills: sortedBills().map((bill) => ({
+      name: bill.name,
+      amount: bill.amount,
+      due: bill.due,
+      handled: bill.handled,
+      status: billStatusText(bill)
+    })),
+    expenses
+  };
+}
+
+async function fetchAiCoach(question) {
+  const response = await fetch("/api/coach", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      question,
+      context: coachContext()
+    })
+  });
+
+  const payload = await response.json();
+
+  if (!response.ok) {
+    throw new Error(payload.error || "AI coach request failed.");
+  }
+
+  return payload.reply;
+}
+
+async function askCoach(event) {
   event.preventDefault();
 
   const question = coachInput.value.trim();
@@ -619,9 +668,15 @@ function askCoach(event) {
   }
 
   appendMessage("user", "You", question);
-  appendMessage("bot", "SpendWise Coach", coachReply(question));
+  const thinkingMessage = appendMessage("bot", "SpendWise Coach", "Thinking through your budget...");
   coachForm.reset();
   coachInput.focus();
+
+  try {
+    thinkingMessage.querySelector("p").textContent = await fetchAiCoach(question);
+  } catch (error) {
+    thinkingMessage.querySelector("p").textContent = `${coachReply(question)} I used the built-in coach because the real AI service is not connected yet.`;
+  }
 }
 
 function usePrompt(event) {
